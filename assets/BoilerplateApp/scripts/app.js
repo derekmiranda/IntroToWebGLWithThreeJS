@@ -11,8 +11,17 @@ var demo = (function () {
         ground,
         controls = null;
 
+
+    const createDelta = (initDist, initSpeed) => (currDist) => {
+        const currSpeed = initSpeed * currDist / initDist;
+        const currDelta = currSpeed / 60;
+        return Math.max(minDelta, currDelta);
+    }
+
     var moveTime = 5000; // ms
     var pxPerSec = 20;
+    var minDelta = .01;
+    var initDist, getDelta;
 
     function initScene() {
 
@@ -57,13 +66,17 @@ var demo = (function () {
         camera.position.y += 50;
         camera.lookAt(box.position)
 
+        initDist = camera.position.y - box.position.y;
+        getDelta = createDelta(initDist, pxPerSec);
+
         requestAnimationFrame(render);
 
     };
 
     function moveCameraToBox(cam, box) {
         if (cam.position.y >= box.position.y) {
-            var yDelta = pxPerSec / 60;
+            var distBw = cam.position.y - box.position.y;
+            var yDelta = getDelta(distBw);
             cam.position.y -= yDelta;
             cam.lookAt(box.position);
         }
