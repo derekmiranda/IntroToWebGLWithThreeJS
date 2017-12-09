@@ -48,7 +48,23 @@ var demo = (function () {
                 20),
             new THREE.MeshBasicMaterial({
                 color: 0xFF0000
-            }));
+            })
+        );
+
+        var childBox = new THREE.Mesh(
+            new THREE.CubeGeometry(
+                10,
+                10,
+                10),
+            new THREE.MeshBasicMaterial({
+                color: 0x00FF00
+            })
+        )
+
+        // moving child box to right of parent box
+        childBox.position.x += 22;
+
+        box.add(childBox)
 
         scene.add(box);
 
@@ -82,11 +98,19 @@ var demo = (function () {
         }
     }
 
+    var startTime;
+    function moveItem(item) {
+        if (!startTime) startTime = Date.now()
+        var currentTime = Date.now()
+        if (currentTime - startTime <= 2000) item.position.x -= .1;
+    }
+
     function render() {
         renderer.render(scene, camera);
 
         // 5. move camera gradually closer to cube
-        moveCameraToBox(camera, box);
+        // moveCameraToBox(camera, box);
+        moveItem(box)
 
         requestAnimationFrame(render);
     };
