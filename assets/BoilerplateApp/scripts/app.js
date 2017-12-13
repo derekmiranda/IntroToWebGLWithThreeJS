@@ -105,12 +105,24 @@ var demo = (function () {
         if (currentTime - startTime <= 2000) item.position.x -= .1;
     }
 
+    var forth = true;
+    function moveItemBackAndForth(item) {
+        if (forth) {
+            item.position.x += .1;
+        } else {
+            item.position.x -= .1;
+        }
+
+        if (item.position.x >= 20) forth = false
+        else if (item.position.x <= -20) forth = true
+    }
+
     function render() {
         renderer.render(scene, camera);
 
         // 5. move camera gradually closer to cube
         // moveCameraToBox(camera, box);
-        moveItem(box)
+        moveItemBackAndForth(box)
 
         requestAnimationFrame(render);
     };
