@@ -47,6 +47,7 @@ var demo = (function () {
     };
 
     function render() {
+        if (mesh) mesh.rotation.y += .1;
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     };
