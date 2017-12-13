@@ -10,18 +10,19 @@ var demo = (function () {
         box,
         ground,
         controls = null;
+    var loader = new THREE.JSONLoader(),
+        mesh;
 
+    loader.load('gooseFull.js', function (geometry) {
+        var gooseMaterial = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture('goose.jpg')
+        });
 
-    const createDelta = (initDist, initSpeed) => (currDist) => {
-        const currSpeed = initSpeed * currDist / initDist;
-        const currDelta = currSpeed / 60;
-        return Math.max(minDelta, currDelta);
-    }
+        mesh = new THREE.Mesh(geometry, gooseMaterial);
+        mesh.scale.set(20, 20, 20);
 
-    var moveTime = 5000; // ms
-    var pxPerSec = 20;
-    var minDelta = .01;
-    var initDist, getDelta;
+        scene.add(mesh);
+    });
 
     function initScene() {
 
@@ -41,89 +42,12 @@ var demo = (function () {
 
         scene.add(camera);
 
-        box = new THREE.Mesh(
-            new THREE.CubeGeometry(
-                20,
-                20,
-                20),
-            new THREE.MeshBasicMaterial({
-                color: 0xFF0000
-            })
-        );
-
-        var childBox = new THREE.Mesh(
-            new THREE.CubeGeometry(
-                10,
-                10,
-                10),
-            new THREE.MeshBasicMaterial({
-                color: 0x00FF00
-            })
-        )
-
-        // moving child box to right of parent box
-        childBox.position.x += 22;
-
-        box.add(childBox)
-
-        scene.add(box);
-
-        // 1. move camera closer
-        camera.position.z -= 50;
-
-        // 2. move camera to left
-        camera.position.x -= 5;
-
-        // 3. Move cube to right and further away
-        box.position.x += 5;
-        box.position.z -= 5;
-
-        // 4. make camera look down on cube
-        camera.position.y += 50;
-        camera.lookAt(box.position)
-
-        initDist = camera.position.y - box.position.y;
-        getDelta = createDelta(initDist, pxPerSec);
-
         requestAnimationFrame(render);
 
     };
 
-    function moveCameraToBox(cam, box) {
-        if (cam.position.y >= box.position.y) {
-            var distBw = cam.position.y - box.position.y;
-            var yDelta = getDelta(distBw);
-            cam.position.y -= yDelta;
-            cam.lookAt(box.position);
-        }
-    }
-
-    var startTime;
-    function moveItem(item) {
-        if (!startTime) startTime = Date.now()
-        var currentTime = Date.now()
-        if (currentTime - startTime <= 2000) item.position.x -= .1;
-    }
-
-    var forth = true;
-    function moveItemBackAndForth(item) {
-        if (forth) {
-            item.position.x += .1;
-        } else {
-            item.position.x -= .1;
-        }
-
-        if (item.position.x >= 20) forth = false
-        else if (item.position.x <= -20) forth = true
-    }
-
     function render() {
         renderer.render(scene, camera);
-
-        // 5. move camera gradually closer to cube
-        // moveCameraToBox(camera, box);
-        moveItemBackAndForth(box)
-
         requestAnimationFrame(render);
     };
 
